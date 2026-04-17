@@ -34,8 +34,10 @@ jobs:
       - name: Build package
         run: npm run build
 
-      - name: Smoke built CLI help
-        run: node dist/cli.js --help
+      - name: Smoke built CLI help and version
+        run: |
+          node dist/cli.js --help
+          node dist/cli.js --version
 
       - name: Pack installable tarball
         run: npm pack
@@ -48,3 +50,4 @@ jobs:
           npm init -y >/dev/null
           npm install "$GITHUB_WORKSPACE/$TARBALL"
           ./node_modules/.bin/agent-instruction-lint --help
+          ./node_modules/.bin/agent-instruction-lint --version
