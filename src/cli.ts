@@ -86,9 +86,12 @@ export function formatFindingsText(findings: Finding[]): string {
 		.join("\n\n");
 }
 
-export function helpText(): string {
+export function helpText(
+	invokedPath = process.argv[1],
+	env = process.env,
+): string {
 	return [
-		"Usage: npm run lint -- [options]",
+		`Usage: ${formatUsageCommand(invokedPath, env)} [options]`,
 		"",
 		"Options:",
 		"  --repo-root <path>   Repository root to lint (default: current working directory)",
@@ -98,6 +101,26 @@ export function helpText(): string {
 		"  --version            Show the CLI version",
 		"  --help, -h           Show this help text",
 	].join("\n");
+}
+
+export function formatUsageCommand(
+	invokedPath: string | undefined,
+	env: NodeJS.ProcessEnv,
+): string {
+	if (env.npm_lifecycle_event === "lint") {
+		return "npm run lint --";
+	}
+	if (!invokedPath) {
+		return "agent-instruction-lint";
+	}
+	const basename = path.basename(invokedPath);
+	if (basename !== "cli.js" && basename !== "cli.ts") {
+		return basename;
+	}
+	const relativePath = path.relative(process.cwd(), path.resolve(invokedPath));
+	const displayPath =
+		relativePath && !relativePath.startsWith("..") ? relativePath : basename;
+	return `node ${displayPath}`;
 }
 
 async function requireDiffText(diffFile: string): Promise<string> {

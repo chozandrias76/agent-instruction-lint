@@ -6,7 +6,7 @@ import path from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
-import { CLI_VERSION, formatFindingsText, helpText, isDirectExecution, parseCliArgs, runCli } from '../src/cli.js'
+import { CLI_VERSION, formatFindingsText, formatUsageCommand, helpText, isDirectExecution, parseCliArgs, runCli } from '../src/cli.js'
 import type { Finding } from '../src/types.js'
 
 const execFileAsync = promisify(execFile)
@@ -117,9 +117,24 @@ describe('isDirectExecution', () => {
   })
 })
 
+describe('formatUsageCommand', () => {
+  it('uses npm run lint syntax when invoked from the npm script lifecycle', () => {
+    expect(formatUsageCommand('/repo/src/cli.ts', { npm_lifecycle_event: 'lint' } as NodeJS.ProcessEnv)).toBe('npm run lint --')
+  })
+
+  it('uses the installed binary name when invoked via a packaged shim', () => {
+    expect(formatUsageCommand('/tmp/node_modules/.bin/agent-instruction-lint', {} as NodeJS.ProcessEnv)).toBe('agent-instruction-lint')
+  })
+
+  it('uses a node command for direct cli.js invocation', () => {
+    expect(formatUsageCommand(path.join(process.cwd(), 'dist/cli.js'), {} as NodeJS.ProcessEnv)).toBe('node dist/cli.js')
+  })
+})
+
 describe('helpText', () => {
   it('describes the available CLI options', () => {
-    const text = helpText()
+    const text = helpText('/tmp/node_modules/.bin/agent-instruction-lint', {} as NodeJS.ProcessEnv)
+    expect(text).toContain('Usage: agent-instruction-lint [options]')
     expect(text).toContain('--repo-root <path>')
     expect(text).toContain('--diff-file <path>')
     expect(text).toContain('default combined staged+unstaged+untracked git diff')
