@@ -41,6 +41,16 @@ npm run build
 npm pack
 ```
 
+You can smoke-install that tarball into a fresh temp project with:
+
+```bash
+tmpdir="$(mktemp -d)"
+cd "$tmpdir"
+npm init -y >/dev/null
+npm install /path/to/agent-instruction-lint-0.1.0.tgz
+./node_modules/.bin/agent-instruction-lint --help
+```
+
 The packaged binary entrypoint is `agent-instruction-lint`.
 
 Text output includes location, rule id, evidence, and suggestion for each finding.

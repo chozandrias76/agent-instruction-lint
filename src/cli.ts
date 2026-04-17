@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { realpathSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -134,10 +135,32 @@ export async function runCli(argv: string[]): Promise<number> {
 	return findings.length > 0 ? 1 : 0;
 }
 
-const invokedPath = process.argv[1] ? path.resolve(process.argv[1]) : undefined;
+export function isDirectExecution(
+	invokedPath: string | undefined,
+	currentPath: string,
+): boolean {
+	if (!invokedPath) {
+		return false;
+	}
+	return (
+		normalizeExecutablePath(invokedPath) ===
+		normalizeExecutablePath(currentPath)
+	);
+}
+
+function normalizeExecutablePath(filePath: string): string {
+	const resolved = path.resolve(filePath);
+	try {
+		return realpathSync(resolved);
+	} catch {
+		return resolved;
+	}
+}
+
+const invokedPath = process.argv[1];
 const currentPath = import.meta.filename;
 
-if (invokedPath && currentPath === invokedPath) {
+if (isDirectExecution(invokedPath, currentPath)) {
 	runCli(process.argv.slice(2)).then(
 		(code) => {
 			process.exitCode = code;

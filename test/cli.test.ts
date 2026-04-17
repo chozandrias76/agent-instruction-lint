@@ -1,12 +1,12 @@
 import { execFile } from 'node:child_process'
-import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, symlink, writeFile } from 'node:fs/promises'
 import { promisify } from 'node:util'
 import os from 'node:os'
 import path from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
-import { formatFindingsText, helpText, parseCliArgs, runCli } from '../src/cli.js'
+import { formatFindingsText, helpText, isDirectExecution, parseCliArgs, runCli } from '../src/cli.js'
 import type { Finding } from '../src/types.js'
 
 const execFileAsync = promisify(execFile)
@@ -88,6 +88,21 @@ describe('formatFindingsText', () => {
 
   it('renders a zero-findings summary when there are no findings', () => {
     expect(formatFindingsText([])).toBe('0 findings')
+  })
+})
+
+describe('isDirectExecution', () => {
+  it('treats a symlinked executable path as direct execution of the same file', async () => {
+    const root = await makeRepo()
+    const actual = path.join(root, 'dist/cli.js')
+    const link = path.join(root, 'node_modules/.bin/agent-instruction-lint')
+
+    await mkdir(path.dirname(actual), { recursive: true })
+    await mkdir(path.dirname(link), { recursive: true })
+    await writeFile(actual, '#!/usr/bin/env node\n')
+    await symlink(actual, link)
+
+    expect(isDirectExecution(link, actual)).toBe(true)
   })
 })
 

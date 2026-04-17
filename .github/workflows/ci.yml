@@ -39,3 +39,12 @@ jobs:
 
       - name: Pack installable tarball
         run: npm pack
+
+      - name: Smoke install tarball in a fresh temp project
+        run: |
+          TARBALL="$(ls agent-instruction-lint-*.tgz)"
+          TMPDIR="$(mktemp -d)"
+          cd "$TMPDIR"
+          npm init -y >/dev/null
+          npm install "$GITHUB_WORKSPACE/$TARBALL"
+          ./node_modules/.bin/agent-instruction-lint --help
