@@ -298,6 +298,20 @@ describe('parseGitDiff', () => {
       { text: 'second new', line: 10 }
     ])
   })
+
+  it('parses diff headers for files whose paths contain spaces', () => {
+    const diff = parseGitDiff([
+      'diff --git a/docs/My Guide.md b/docs/My Guide.md',
+      '--- a/docs/My Guide.md',
+      '+++ b/docs/My Guide.md',
+      '@@ -0,0 +1 @@',
+      '+Do not pause'
+    ].join('\n'))
+
+    expect(diff.get('docs/My Guide.md')?.addedLines).toEqual([
+      { text: 'Do not pause', line: 1 }
+    ])
+  })
 })
 
 describe('loadConfig', () => {

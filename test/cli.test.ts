@@ -252,4 +252,33 @@ describe('runCli', () => {
       ])
     )
   })
+
+  it('includes untracked files whose paths contain spaces in the default git diff', async () => {
+    const repoRoot = await makeRepo()
+    await writeFile(path.join(repoRoot, 'agent-instruction-lint.json'), JSON.stringify({
+      $schema: './agent-instruction-lint.schema.json',
+      citation: {
+        protected: ['docs/My Guide.md'],
+        log: 'gort.citations.md'
+      }
+    }, null, 2))
+
+    await runCommand('git', ['init'], repoRoot)
+    await runCommand('git', ['config', 'user.email', 'agent@example.com'], repoRoot)
+    await runCommand('git', ['config', 'user.name', 'Agent'], repoRoot)
+    await runCommand('git', ['add', 'agent-instruction-lint.json'], repoRoot)
+    await runCommand('git', ['commit', '-m', 'test: init'], repoRoot)
+
+    await mkdir(path.join(repoRoot, 'docs'), { recursive: true })
+    await writeFile(path.join(repoRoot, 'docs/My Guide.md'), 'Do not pause and always continue\n')
+
+    const result = await captureStdout(() => runCli(['--repo-root', repoRoot, '--format', 'json']))
+    const findings = JSON.parse(result.output)
+    expect(result.code).toBe(1)
+    expect(findings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ruleId: 'CITE001', filePath: 'docs/My Guide.md', line: 1 })
+      ])
+    )
+  })
 })
