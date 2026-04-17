@@ -1,0 +1,99 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://example.com/agent-instruction-lint.schema.json",
+	"title": "agent-instruction-lint config",
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"$schema": { "type": "string", "minLength": 1 },
+		"instructionModel": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"name": { "type": "string", "minLength": 1 },
+				"chainFromRootToCwd": { "type": "boolean" },
+				"overrideFiles": {
+					"type": "array",
+					"items": { "type": "string", "minLength": 1 },
+					"default": []
+				},
+				"baseFiles": {
+					"type": "array",
+					"items": { "type": "string", "minLength": 1 },
+					"default": []
+				},
+				"fallbackFiles": {
+					"type": "array",
+					"items": { "type": "string", "minLength": 1 },
+					"default": []
+				}
+			},
+			"required": ["name"]
+		},
+		"roles": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"rootControllers": { "$ref": "#/$defs/globArray" },
+				"scopedControllers": { "$ref": "#/$defs/globArray" },
+				"maintainerGuides": { "$ref": "#/$defs/globArray" },
+				"consumerGuides": { "$ref": "#/$defs/globArray" },
+				"citationLogs": { "$ref": "#/$defs/globArray" },
+				"evalCompanions": { "$ref": "#/$defs/globArray" },
+				"supportingDocs": { "$ref": "#/$defs/globArray" }
+			}
+		},
+		"citation": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"protected": { "$ref": "#/$defs/globArray" },
+				"log": { "type": "string", "minLength": 1 },
+				"entryDocs": { "$ref": "#/$defs/globArray" },
+				"requiredMarkers": { "$ref": "#/$defs/markerGroups" },
+				"optionalMarkers": { "$ref": "#/$defs/markerGroups" }
+			},
+			"required": ["protected", "log"]
+		},
+		"phrases": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"canonical": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": false,
+						"properties": {
+							"value": { "type": "string", "minLength": 1 },
+							"recognizedVariants": { "$ref": "#/$defs/stringArray" },
+							"forbiddenEmittedForms": { "$ref": "#/$defs/stringArray" }
+						},
+						"required": ["value"]
+					}
+				}
+			}
+		}
+	},
+	"$defs": {
+		"stringArray": {
+			"type": "array",
+			"items": { "type": "string", "minLength": 1 },
+			"default": []
+		},
+		"globArray": {
+			"type": "array",
+			"items": { "type": "string", "minLength": 1 },
+			"default": []
+		},
+		"markerGroups": {
+			"type": "object",
+			"propertyNames": { "pattern": "^[A-Za-z][A-Za-z0-9_]*$" },
+			"additionalProperties": {
+				"type": "array",
+				"items": { "type": "string", "minLength": 1 },
+				"minItems": 1
+			}
+		}
+	}
+}

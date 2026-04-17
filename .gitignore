@@ -2,3 +2,8 @@
 # Dolt database files (added by bd init)
 .dolt/
 *.db
+
+# Node / TypeScript
+node_modules/
+coverage/
+tmp-dist/
