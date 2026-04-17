@@ -1,0 +1,18 @@
+{
+	"$schema": "../../../agent-instruction-lint.schema.json",
+	"roles": {
+		"rootControllers": ["AGENTS.md", "gort.md"],
+		"consumerGuides": ["README.md"],
+		"supportingDocs": ["docs/reference.md"]
+	},
+	"citation": {
+		"protected": ["gort.md"],
+		"log": "gort.citations.md",
+		"entryDocs": ["AGENTS.md", "README.md"],
+		"requiredMarkers": {
+			"localEvidence": ["### Local evidence"],
+			"updatedFiles": ["Updated files"],
+			"rationale": ["Why this evidence supports the repair"]
+		}
+	}
+}

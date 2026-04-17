@@ -4,10 +4,21 @@
 	"private": true,
 	"type": "module",
 	"description": "Deterministic tooling for linting AGENTS/controller markdown",
+	"bin": {
+		"agent-instruction-lint": "./dist/cli.js"
+	},
+	"files": [
+		"dist",
+		"agent-instruction-lint.schema.json",
+		"README.md",
+		"docs/setup-and-ci-examples.md"
+	],
 	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
 		"lint": "tsx src/cli.ts",
 		"test": "vitest run",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"prepack": "npm run build"
 	},
 	"dependencies": {
 		"ajv": "^8.17.1",

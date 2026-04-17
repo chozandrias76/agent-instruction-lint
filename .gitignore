@@ -6,4 +6,5 @@
 # Node / TypeScript
 node_modules/
 coverage/
+dist/
 tmp-dist/

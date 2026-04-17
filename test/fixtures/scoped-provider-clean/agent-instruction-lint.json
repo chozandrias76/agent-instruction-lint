@@ -1,0 +1,6 @@
+{
+	"$schema": "../../../agent-instruction-lint.schema.json",
+	"roles": {
+		"rootControllers": ["codex.md", "zeph.md"]
+	}
+}

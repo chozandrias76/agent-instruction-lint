@@ -1,0 +1,15 @@
+diff --git a/gort.md b/gort.md
+--- a/gort.md
++++ b/gort.md
+@@ -1 +1 @@
+-Do not pause.
++Do not pause and always continue.
+diff --git a/gort.citations.md b/gort.citations.md
+--- a/gort.citations.md
++++ b/gort.citations.md
+@@ -1 +1,5 @@
++## 2026-04-17 — update
++### Local evidence
++- Artifact: [proof](./artifacts/proof.txt)
++- Updated files: [gort](./gort.md)
++### Why this evidence supports the repair

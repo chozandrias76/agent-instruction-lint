@@ -24,6 +24,8 @@ See [`docs/web-reference-findings.md`](./docs/web-reference-findings.md) for the
 
 A draft config schema now lives at [`agent-instruction-lint.schema.json`](./agent-instruction-lint.schema.json).
 
+See [`docs/setup-and-ci-examples.md`](./docs/setup-and-ci-examples.md) for a practical adoption guide with a sample config, local invocation patterns, and GitHub Actions snippets.
+
 ## Usage
 
 Run the linter against a repository config:
@@ -31,6 +33,15 @@ Run the linter against a repository config:
 ```bash
 npm run lint -- --repo-root /path/to/repo
 ```
+
+To build an installable CLI tarball locally:
+
+```bash
+npm run build
+npm pack
+```
+
+The packaged binary entrypoint is `agent-instruction-lint`.
 
 Text output includes location, rule id, evidence, and suggestion for each finding.
 JSON output is available for CI and scripted use:
@@ -43,12 +54,16 @@ Optional flags:
 - `--config <path>` to use a non-default config path relative to `--repo-root`
 - `--diff-file <path>` to lint against a supplied unified diff instead of the default combined staged+unstaged+untracked git diff
 
+A more complete setup/config/CI example now lives in [`docs/setup-and-ci-examples.md`](./docs/setup-and-ci-examples.md).
+
 Exit codes:
 - `0` = no findings
 - `1` = findings emitted
 - `2` = CLI/config/runtime error
 
 When config loading fails, the CLI reports explicit path-based errors for missing config files, invalid JSON, or schema validation failures. Missing `--diff-file` targets are reported the same way.
+
+A GitHub Actions workflow now lives at `.github/workflows/ci.yml` and runs typecheck, tests, build, built-CLI smoke, and `npm pack` on pushes/PRs.
 
 ## Current contract shape
 
