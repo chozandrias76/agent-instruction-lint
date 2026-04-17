@@ -4,8 +4,12 @@ import { realpathSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
+import packageJson from "../package.json" with { type: "json" };
+
 import { lintRepository } from "./index.js";
 import type { Finding } from "./types.js";
+
+export const CLI_VERSION = packageJson.version;
 
 export interface CliOptions {
 	repoRoot: string;
@@ -13,6 +17,7 @@ export interface CliOptions {
 	diffFile?: string;
 	format: "text" | "json";
 	help: boolean;
+	version: boolean;
 }
 
 export function parseCliArgs(argv: string[]): CliOptions {
@@ -20,12 +25,17 @@ export function parseCliArgs(argv: string[]): CliOptions {
 		repoRoot: process.cwd(),
 		format: "text",
 		help: false,
+		version: false,
 	};
 
 	for (let index = 0; index < argv.length; index += 1) {
 		const arg = argv[index];
 		if (arg === "--help" || arg === "-h") {
 			options.help = true;
+			continue;
+		}
+		if (arg === "--version") {
+			options.version = true;
 			continue;
 		}
 		if (arg === "--repo-root") {
@@ -85,6 +95,7 @@ export function helpText(): string {
 		"  --config <path>      Config path relative to repo root (default: agent-instruction-lint.json)",
 		"  --diff-file <path>   Read diff text from a file instead of the default combined staged+unstaged+untracked git diff",
 		"  --format <text|json> Output format (default: text)",
+		"  --version            Show the CLI version",
 		"  --help, -h           Show this help text",
 	].join("\n");
 }
@@ -114,6 +125,10 @@ export async function runCli(argv: string[]): Promise<number> {
 	const options = parseCliArgs(argv);
 	if (options.help) {
 		process.stdout.write(`${helpText()}\n`);
+		return 0;
+	}
+	if (options.version) {
+		process.stdout.write(`${CLI_VERSION}\n`);
 		return 0;
 	}
 

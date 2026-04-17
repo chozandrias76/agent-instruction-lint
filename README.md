@@ -63,6 +63,7 @@ npm run lint -- --repo-root /path/to/repo --format json
 Optional flags:
 - `--config <path>` to use a non-default config path relative to `--repo-root`
 - `--diff-file <path>` to lint against a supplied unified diff instead of the default combined staged+unstaged+untracked git diff
+- `--version` to print the packaged CLI version
 
 A more complete setup/config/CI example now lives in [`docs/setup-and-ci-examples.md`](./docs/setup-and-ci-examples.md).
 

@@ -6,7 +6,7 @@ import path from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
-import { formatFindingsText, helpText, isDirectExecution, parseCliArgs, runCli } from '../src/cli.js'
+import { CLI_VERSION, formatFindingsText, helpText, isDirectExecution, parseCliArgs, runCli } from '../src/cli.js'
 import type { Finding } from '../src/types.js'
 
 const execFileAsync = promisify(execFile)
@@ -51,7 +51,8 @@ describe('parseCliArgs', () => {
       configPath: 'custom.json',
       diffFile: '/tmp/diff.patch',
       format: 'json',
-      help: false
+      help: false,
+      version: false
     })
   })
 
@@ -59,7 +60,17 @@ describe('parseCliArgs', () => {
     expect(parseCliArgs(['--help'])).toEqual({
       repoRoot: process.cwd(),
       format: 'text',
-      help: true
+      help: true,
+      version: false
+    })
+  })
+
+  it('parses --version without requiring other arguments', () => {
+    expect(parseCliArgs(['--version'])).toEqual({
+      repoRoot: process.cwd(),
+      format: 'text',
+      help: false,
+      version: true
     })
   })
 })
@@ -113,6 +124,7 @@ describe('helpText', () => {
     expect(text).toContain('--diff-file <path>')
     expect(text).toContain('default combined staged+unstaged+untracked git diff')
     expect(text).toContain('--format <text|json>')
+    expect(text).toContain('--version')
   })
 })
 
@@ -123,6 +135,12 @@ describe('runCli', () => {
     await expect(runCli(['--repo-root', repoRoot, '--diff-file', path.join(repoRoot, 'missing.patch')]))
       .rejects
       .toThrow(`Diff file not found: ${path.join(repoRoot, 'missing.patch')}`)
+  })
+
+  it('returns 0 and emits the package version for --version', async () => {
+    const result = await captureStdout(() => runCli(['--version']))
+    expect(result.code).toBe(0)
+    expect(result.output.trim()).toBe(CLI_VERSION)
   })
 
   it('returns 1 and emits json when findings are present', async () => {
